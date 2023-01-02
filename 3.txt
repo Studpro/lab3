@@ -1,0 +1,38 @@
+import numpy as np
+import pandas as pd
+data = pd.DataFrame(data=pd.read_csv('2aabb.csv'))
+concepts = np.array(data.iloc[:,0:-1])
+target = np.array(data.iloc[:,-1])
+def learn(concepts, target):
+ print("list of attributes")
+ attributes = ['Sky','Temp','Humidity','Wind','Water','Forecast']
+ print(attributes)
+ num_attributes = len(attributes)
+ specific_h = ['0'] * num_attributes
+ print("Initial specific hypothesis\n",specific_h)
+ general_h = [["?" for i in range(len(specific_h))] for i in range (len(specific_h))]
+ print("Initital General hypothesis\n",general_h)
+ specific_h = concepts[0].copy()
+ for i, h in enumerate(concepts):
+ if target[i] == "YES":
+ for x in range(len(specific_h)):
+ if h[x] != specific_h[x]:
+ specific_h[x] = '?'
+ general_h[x][x] = '?'
+ if target[i] == "NO":
+ for x in range(len(specific_h)):
+ if h[x] != specific_h[x]:
+ general_h[x][x] = specific_h[x]
+ else:
+ general_h[x][x] = '?'
+ print("steps of Candidate Elemination Algorithem",i+1)
+ print("Instance",h)
+ print("S",i+1,'=',specific_h)
+ print("G",i+1,'=',general_h)
+ indices = [i for i, val in enumerate(general_h) if val == ['?', '?', '?', '?', '?', '?']]
+ for i in indices:
+ general_h.remove(['?','?','?','?','?','?'])
+ return specific_h, general_h
+s_final, g_final = learn(concepts, target)
+print("Final Specific hypothesis", s_final, sep="\n")
+print("Final General hypothesis", g_final, sep="\n")
